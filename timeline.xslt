@@ -116,6 +116,7 @@
   <xsl:template match="lane">
     <svg height="14cm" width="100%" y="{concat(position() * 4 - 4, 'cm')}">
         <xsl:apply-templates select="event" />
+        <xsl:apply-templates select="group" />
     </svg>
   </xsl:template>
 
@@ -134,6 +135,11 @@
         <p xmlns="http://www.w3.org/1999/xhtml"><xsl:apply-templates /></p>
       </foreignObject>
     </g>
+  </xsl:template>
+
+  <xsl:template match="group">
+    <rect x="{concat((@startYear - $sy) * 12 + (@startMonth - 1), 'cm')}" y="2mm" width="{concat((@endYear - @startYear) * 12 + @endMonth - @startMonth - 0.4, 'cm')}" height="3.6cm" rx="2mm" ry="2mm" class="eventGroup" />
+    <text x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 0.4, 'cm')}" y="7mm" class="eventGroupDesc"><xsl:value-of select="@title" /></text>
   </xsl:template>
 
   <xsl:template match="@*|node()">
