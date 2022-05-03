@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<timeline
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  startYear="2016"
+  numYears="6"
+  lanes="4">
+  <lane name="Lane A">
+    <event year="2017" month="7" day="3" title="Some event with a very long title and still a bit longer">Description of some event</event>
+  </lane>
+  <lane name="Lane B">
+    <event year="2018" month="1" day="1" title="Another event">
+    <h:a href="http://www.google.com">A link to Google</h:a>
+    Description of another event</event>
+  </lane>
+
+</timeline>
