@@ -58,7 +58,10 @@
     }
     
     .tooltip {display: none;}
-    g:hover .tooltip {display: block;}
+    g:hover .tooltip {
+      display: block;
+      background-color: White;
+    }
     </style>
 
       <xsl:call-template name="writeYearHeadings">
@@ -124,15 +127,25 @@
   <xsl:template match="event">
     <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 2" />
     <g>
-      <rect width="3cm" height="3cm" y="1cm" x="{concat($xpos -1.5, 'cm')}" style="fill:rgb(255,255,255)" />
-      <text x="{concat($xpos, 'cm')}" y="1.8cm" class="eventDate">
-        <xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" />
-      </text>
-      <foreignObject x="{concat($xpos - 1.5, 'cm')}" y="2.5cm" width="3cm" height="2.5cm">
-        <p class="eventText" xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@title" /></p>
-      </foreignObject>
-      <rect width="1.5mm" height="6mm" style="fill:rgb(0,0,0);" y="2cm" x="{concat($xpos - 0.075, 'cm')}" />
+      <xsl:choose>
+        <xsl:when test="@minor">
+          <circle cx="{concat($xpos, 'cm')}" cy="2.35cm" r="1.5mm" />
+        </xsl:when>
+        <xsl:otherwise>
+          <rect width="3cm" height="3cm" y="1cm" x="{concat($xpos -1.5, 'cm')}" style="fill:rgb(255,255,255)" />
+          <rect width="1.5mm" height="6mm" style="fill:rgb(0,0,0);" y="2cm" x="{concat($xpos - 0.075, 'cm')}" />
+          <text x="{concat($xpos, 'cm')}" y="1.8cm" class="eventDate">
+            <xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" />
+          </text>
+          <foreignObject x="{concat($xpos - 1.5, 'cm')}" y="2.5cm" width="3cm" height="2.5cm">
+            <p class="eventText" xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@title" /></p>
+          </foreignObject>
+        </xsl:otherwise>
+      </xsl:choose>
       <foreignObject class="tooltip" x="{concat($xpos - 2, 'cm')}" y="3.5cm" width="6cm" height="10cm">
+        <xsl:if test="@minor">
+          <p xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" /></p>
+        </xsl:if>
         <p xmlns="http://www.w3.org/1999/xhtml"><xsl:apply-templates /></p>
       </foreignObject>
     </g>

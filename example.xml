@@ -15,6 +15,9 @@
     <event year="2018" month="1" day="1" title="Another event">
     <h:a href="http://www.google.com">A link to Google</h:a>
     Description of another event</event>
+    <event year="2018" month="1" day="15" minor="true">
+      Description of minor event
+    </event>
 
     <group title="A group of events" startYear="2017" startMonth="4" endYear="2020" endMonth="12" />
   </lane>
