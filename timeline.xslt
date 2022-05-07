@@ -58,6 +58,13 @@
     }
     
     .tooltip {display: none;}
+
+    .eventMarker {
+      fill: rgb(0,0,0);
+    }
+    .eventMarker:hover {
+      fill: rgb(0,0,255);
+    }
     
     <xsl:apply-templates select="//event" mode="stylesheet" />
     </style>
@@ -137,11 +144,11 @@
     <g class="{generate-id(.)}">
       <xsl:choose>
         <xsl:when test="@minor">
-          <circle cx="{concat($xpos, 'cm')}" cy="{concat($ypos + 2.35, 'cm')}" r="1.5mm" />
+          <circle class="eventMarker" cx="{concat($xpos, 'cm')}" cy="{concat($ypos + 2.35, 'cm')}" r="1.5mm" />
         </xsl:when>
         <xsl:otherwise>
           <rect width="3cm" height="3cm" y="{concat($ypos + 1, 'cm')}" x="{concat($xpos -1.5, 'cm')}" style="fill:rgb(255,255,255)" />
-          <rect width="1.5mm" height="6mm" style="fill:rgb(0,0,0);" y="{concat($ypos + 2, 'cm')}" x="{concat($xpos - 0.075, 'cm')}" />
+          <rect width="1.5mm" height="6mm" class="eventMarker" y="{concat($ypos + 2, 'cm')}" x="{concat($xpos - 0.075, 'cm')}" />
           <text x="{concat($xpos, 'cm')}" y="{concat($ypos + 1.8, 'cm')}" class="eventDate">
             <xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" />
           </text>
