@@ -58,10 +58,8 @@
     }
     
     .tooltip {display: none;}
-    g:hover .tooltip {
-      display: block;
-      background-color: White;
-    }
+    
+    <xsl:apply-templates select="//event" mode="stylesheet" />
     </style>
 
       <xsl:call-template name="writeYearHeadings">
@@ -82,6 +80,7 @@
             <xsl:with-param name="num" select="@numYears" />
         </xsl:call-template>
         <xsl:apply-templates select="lane" />
+        <xsl:apply-templates select="lane" mode="overlay" />
 
       </svg>
     </svg>
@@ -118,42 +117,64 @@
   </xsl:template>
 
   <xsl:template match="lane">
-    <svg height="14cm" width="100%" x="2cm" y="{concat(position() * 4 - 4, 'cm')}">
-        <xsl:apply-templates select="event" />
-        <xsl:apply-templates select="group" />
-    </svg>
+    <xsl:apply-templates select="event">
+      <xsl:with-param name="ypos"><xsl:value-of select="position() * 4 - 4" /></xsl:with-param>
+    </xsl:apply-templates>
+    <xsl:apply-templates select="group">
+      <xsl:with-param name="ypos"><xsl:value-of select="position() * 4 - 4" /></xsl:with-param>
+    </xsl:apply-templates>
+  </xsl:template>
+
+  <xsl:template match="lane" mode="overlay">
+    <xsl:apply-templates select="event" mode="overlay">
+      <xsl:with-param name="ypos"><xsl:value-of select="position() * 4 - 4" /></xsl:with-param>
+    </xsl:apply-templates>
   </xsl:template>
 
   <xsl:template match="event">
-    <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 2" />
-    <g>
+    <xsl:param name="ypos" />
+    <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 4" />
+    <g class="{generate-id(.)}">
       <xsl:choose>
         <xsl:when test="@minor">
-          <circle cx="{concat($xpos, 'cm')}" cy="2.35cm" r="1.5mm" />
+          <circle cx="{concat($xpos, 'cm')}" cy="{concat($ypos + 2.35, 'cm')}" r="1.5mm" />
         </xsl:when>
         <xsl:otherwise>
-          <rect width="3cm" height="3cm" y="1cm" x="{concat($xpos -1.5, 'cm')}" style="fill:rgb(255,255,255)" />
-          <rect width="1.5mm" height="6mm" style="fill:rgb(0,0,0);" y="2cm" x="{concat($xpos - 0.075, 'cm')}" />
-          <text x="{concat($xpos, 'cm')}" y="1.8cm" class="eventDate">
+          <rect width="3cm" height="3cm" y="{concat($ypos + 1, 'cm')}" x="{concat($xpos -1.5, 'cm')}" style="fill:rgb(255,255,255)" />
+          <rect width="1.5mm" height="6mm" style="fill:rgb(0,0,0);" y="{concat($ypos + 2, 'cm')}" x="{concat($xpos - 0.075, 'cm')}" />
+          <text x="{concat($xpos, 'cm')}" y="{concat($ypos + 1.8, 'cm')}" class="eventDate">
             <xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" />
           </text>
-          <foreignObject x="{concat($xpos - 1.5, 'cm')}" y="2.5cm" width="3cm" height="2.5cm">
+          <foreignObject x="{concat($xpos - 1.5, 'cm')}" y="{concat($ypos + 2.5, 'cm')}" width="3cm" height="2.5cm">
             <p class="eventText" xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@title" /></p>
           </foreignObject>
         </xsl:otherwise>
       </xsl:choose>
-      <foreignObject class="tooltip" x="{concat($xpos - 2, 'cm')}" y="3.5cm" width="6cm" height="10cm">
-        <xsl:if test="@minor">
-          <p xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" /></p>
-        </xsl:if>
-        <p xmlns="http://www.w3.org/1999/xhtml"><xsl:apply-templates /></p>
-      </foreignObject>
     </g>
   </xsl:template>
 
+  <xsl:template match="event" mode="overlay">
+    <xsl:param name="ypos" />
+    <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 2" />
+    <foreignObject id="{generate-id(.)}" class="{concat('tooltip ', generate-id(.))}" x="{concat($xpos - 2, 'cm')}" y="{concat($ypos + 3.5, 'cm')}" width="6cm" height="10cm">
+      <xsl:if test="@minor">
+        <p xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" /></p>
+      </xsl:if>
+      <p xmlns="http://www.w3.org/1999/xhtml"><xsl:apply-templates /></p>
+    </foreignObject>
+  </xsl:template>
+
+  <xsl:template match="event" mode="stylesheet">
+    .<xsl:value-of select="generate-id(.)" />:hover ~ #<xsl:value-of select="generate-id(.)" />.tooltip {
+      display: block;
+      background-color: White;
+    }
+  </xsl:template>
+
   <xsl:template match="group">
-    <rect x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 2.2, 'cm')}" y="2mm" width="{concat((@endYear - @startYear) * 12 + @endMonth - @startMonth + 0.6, 'cm')}" height="3.6cm" rx="2mm" ry="2mm" class="eventGroup" />
-    <text x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 2.4, 'cm')}" y="7mm" class="eventGroupDesc"><xsl:value-of select="@title" /></text>
+    <xsl:param name="ypos" />
+    <rect x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 2.2, 'cm')}" y="{concat($ypos + 0.2, 'cm')}" width="{concat((@endYear - @startYear) * 12 + @endMonth - @startMonth + 0.6, 'cm')}" height="3.6cm" rx="2mm" ry="2mm" class="eventGroup" />
+    <text x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 2.4, 'cm')}" y="{concat($ypos + 0.7, 'cm')}" class="eventGroupDesc"><xsl:value-of select="@title" /></text>
   </xsl:template>
 
   <xsl:template match="@*|node()">
