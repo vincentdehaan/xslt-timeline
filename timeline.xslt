@@ -170,6 +170,7 @@
     <foreignObject id="{generate-id(.)}" class="{concat('tooltip ', generate-id(.))}" x="{concat($xpos - 2, 'cm')}" y="{concat($ypos + 3.5, 'cm')}" width="6cm" height="10cm">
       <xsl:if test="@minor">
         <p xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@year" />-<xsl:value-of select="@month" />-<xsl:value-of select="@day" /></p>
+        <p xmlns="http://www.w3.org/1999/xhtml"><xsl:value-of select="@title" /></p>
       </xsl:if>
       <p xmlns="http://www.w3.org/1999/xhtml"><xsl:apply-templates /></p>
     </foreignObject>

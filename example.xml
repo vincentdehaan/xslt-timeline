@@ -15,7 +15,7 @@
     <event year="2018" month="1" day="1" title="Another event">
     <h:a href="http://www.google.com">A link to Google</h:a>
     Description of another event</event>
-    <event year="2018" month="1" day="15" minor="true">
+    <event year="2018" month="1" day="15" minor="true" title="Title of minor event">
       Description of minor event
     </event>
 
