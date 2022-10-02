@@ -3,7 +3,8 @@
   xmlns:h="http://www.w3.org/1999/xhtml"
   startYear="2016"
   numYears="6"
-  lanes="4">
+  lanes="4"
+  yearWidth="24">
   <lane name="Lane A">
     <event year="2017" month="7" day="3" title="Some event with a very long title and still a bit longer">Description of some event</event>
     <group title="Test group" startYear="2018" startMonth="1" endYear="2018" endMonth="12" />

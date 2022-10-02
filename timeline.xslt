@@ -15,9 +15,10 @@
 
   <xsl:variable name="sy" select="timeline/@startYear" />
   <xsl:variable name="lanes" select="timeline/@lanes" />
+  <xsl:variable name="yw" select="timeline/@yearWidth" />
   
   <xsl:template match="timeline">
-    <svg xmlns="http://www.w3.org/2000/svg" width="{concat(8 + @numYears * 12, 'cm')}" height="{concat(4 + @lanes * 4, 'cm')}" >
+    <svg xmlns="http://www.w3.org/2000/svg" width="{concat(8 + @numYears * $yw, 'cm')}" height="{concat(4 + @lanes * 4, 'cm')}" >
       <style>
     .eventText {
         font-family: sans-serif;
@@ -79,13 +80,13 @@
       </xsl:call-template>
       
       <rect
-       width="{concat(@numYears * 12 + 4, 'cm')}"
+       width="{concat(@numYears * @yearWidth + 4, 'cm')}"
        height="{concat(@lanes * 4, 'cm')}"
        style="fill:rgb(255,255,255); stroke-width: 4; stroke: rgb(60, 60, 60)"
        x="2cm" y="2cm" />
 
       <svg
-       width="{concat(@numYears * 12, 'cm')}"
+       width="{concat(@numYears * @yearWidth, 'cm')}"
        height="{concat(@lanes * 4, 'cm')}" y="2cm">
         <xsl:call-template name="writeYearLines">
             <xsl:with-param name="num" select="@numYears" />
@@ -103,7 +104,7 @@
     <xsl:param name="i" select="0" />
     <xsl:if test="$num > $i">
         <!-- generate a block -->
-        <text class="year" x="{concat(10 + 12 * $i, 'cm')}" y="1.5cm"><xsl:value-of select="$start + $i" /></text>
+        <text class="year" x="{concat(4 + @yearWidth * ($i + 0.5), 'cm')}" y="1.5cm"><xsl:value-of select="$start + $i" /></text>
         <!-- recursive call -->
         <xsl:call-template name="writeYearHeadings">
             <xsl:with-param name="num" select="$num"/>
@@ -118,7 +119,7 @@
     <xsl:param name="i" select="0" />
     <xsl:if test="$num >= $i">
         <!-- generate a block -->
-        <line x1="{concat($i * 12 + 4, 'cm')}" x2="{concat($i * 12 + 4, 'cm')}" y1="0.2cm" y2="{concat($lanes * 4 - 0.2, 'cm')}" class="yearLine" />
+        <line x1="{concat($i * $yw + 4, 'cm')}" x2="{concat($i * $yw + 4, 'cm')}" y1="0.2cm" y2="{concat($lanes * 4 - 0.2, 'cm')}" class="yearLine" />
         <!-- recursive call -->
         <xsl:call-template name="writeYearLines">
             <xsl:with-param name="num" select="$num"/>
@@ -144,7 +145,7 @@
 
   <xsl:template match="event">
     <xsl:param name="ypos" />
-    <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 4" />
+    <xsl:variable name="xpos" select="(@year - $sy) * $yw + (@month - 1) div 12 * $yw + (@day - 1) div 365 * $yw + 4" />
     <g class="{generate-id(.)}">
       <xsl:choose>
         <xsl:when test="@minor">
@@ -165,7 +166,7 @@
 
   <xsl:template match="event" mode="overlay">
     <xsl:param name="ypos" />
-    <xsl:variable name="xpos" select="(@year - $sy) * 12 + (@month - 1) + (@day - 1) * 0.0333 + 2" />
+    <xsl:variable name="xpos" select="(@year - $sy) * $yw + (@month - 1) div 12 * $yw + (@day - 1) div 365 * $yw + 2" />
     <rect id="{generate-id(.)}" class="{concat('tooltip ', generate-id(.))}" x="{concat($xpos - 2, 'cm')}" y="{concat($ypos + 2.35, 'cm')}" width="6cm" height="1.3cm" style="fill:rgb(0,0,0); fill-opacity: 0;" />
     <foreignObject id="{generate-id(.)}" class="{concat('tooltip ', generate-id(.))}" x="{concat($xpos - 2, 'cm')}" y="{concat($ypos + 3.5, 'cm')}" width="6cm" height="10cm">
       <xsl:if test="@minor">
@@ -184,8 +185,8 @@
 
   <xsl:template match="group">
     <xsl:param name="ypos" />
-    <rect x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 4.2, 'cm')}" y="{concat($ypos + 0.2, 'cm')}" width="{concat((@endYear - @startYear) * 12 + @endMonth - @startMonth + 0.6, 'cm')}" height="3.6cm" rx="2mm" ry="2mm" class="eventGroup" />
-    <text x="{concat((@startYear - $sy) * 12 + (@startMonth - 1) + 4.4, 'cm')}" y="{concat($ypos + 0.7, 'cm')}" class="eventGroupDesc"><xsl:value-of select="@title" /></text>
+    <rect x="{concat((@startYear - $sy) * $yw + (@startMonth - 1) div 12 * $yw + 4.2, 'cm')}" y="{concat($ypos + 0.2, 'cm')}" width="{concat((@endYear - @startYear) * $yw + (@endMonth - @startMonth + 1) div 12 * $yw - 0.4, 'cm')}" height="3.6cm" rx="2mm" ry="2mm" class="eventGroup" />
+    <text x="{concat((@startYear - $sy) * $yw + (@startMonth - 1) div 12 * $yw + 4.4, 'cm')}" y="{concat($ypos + 0.7, 'cm')}" class="eventGroupDesc"><xsl:value-of select="@title" /></text>
   </xsl:template>
 
   <xsl:template match="@*|node()">
