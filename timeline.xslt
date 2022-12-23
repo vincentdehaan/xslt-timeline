@@ -86,7 +86,7 @@
        x="2cm" y="2cm" />
 
       <svg
-       width="{concat(@numYears * @yearWidth, 'cm')}"
+       width="{concat(@numYears * @yearWidth + 4, 'cm')}"
        height="{concat(@lanes * 4, 'cm')}" y="2cm">
         <xsl:call-template name="writeYearLines">
             <xsl:with-param name="num" select="@numYears" />
